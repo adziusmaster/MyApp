@@ -34,9 +34,32 @@ export async function addData(painting: Painting) {
     headers.append('Content-Type', 'application/json')
 
     let res = await fetch(endpoint, {
-      method: 'post',
+      method: 'put',
       headers: headers, 
       body: JSON.stringify(painting)
+    })
+
+    if (!res.ok) throw Error(res.statusText)
+
+    let json = await res.json()
+
+    console.log(json)
+
+  } catch (e) {
+    console.error(e)
+  }
+}
+export async function removeData(id: number) {
+  try {
+    const endpoint = 'http://localhost:5000/api/paintings'
+
+    let headers = new Headers()
+    headers.append('Content-Type', 'application/json')
+
+    let res = await fetch(endpoint, {
+      method: 'delete',
+      headers: headers, 
+      body: JSON.stringify(id)
     })
 
     if (!res.ok) throw Error(res.statusText)

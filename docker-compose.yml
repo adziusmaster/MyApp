@@ -9,13 +9,8 @@ services:
       POSTGRES_DB: mydb
     ports:
       - "5432:5432"
-    networks:
-      - mynetwork
-
-  adminer:
-    image: adminer
-    ports:
-      - 8080:8080 
+    volumes:
+      - pgdata:/var/lib/postgresql/data
     networks:
       - mynetwork
       
@@ -25,8 +20,6 @@ services:
       - "5000:80"
     depends_on:
       - db
-    environment:
-      CONNECTION_STRING: Server=localhost;Port=5432;Database=mydb;Username=myuser;Password=mypassword
     volumes:
       - .:/app
     networks:
@@ -40,12 +33,13 @@ services:
       - "3000:3000"
     depends_on:
       - web
-    environment:
-      REACT_APP_API_URL: http://web:80/api
     volumes:
       - ./client:/app
     networks:
       - mynetwork
+
+volumes:
+  pgdata:
 
 networks:
   mynetwork:

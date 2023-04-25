@@ -25,7 +25,7 @@ namespace App.Controllers;
             return await _paintingContext.PaintingsList.ToListAsync();
         }
 
-        [HttpPost]
+        [HttpPut]
         public async Task<ActionResult<Painting>> AddPainting([FromBody] Painting painting)
         {
             if(_paintingContext == null || _paintingContext.PaintingsList == null)
@@ -37,6 +37,27 @@ namespace App.Controllers;
             await _paintingContext.SaveChangesAsync();
 
             return painting;
+        }
+
+        [HttpDelete]
+        public async Task<ActionResult<bool>> RemovePainting([FromBody] int Id)
+        {
+            if(_paintingContext == null || _paintingContext.PaintingsList == null)
+            {
+                return NotFound();
+            }
+
+            Painting? paintingToRemove = _paintingContext.PaintingsList.Where(p => p.Id == Id).FirstOrDefault();
+
+            if(paintingToRemove == null)
+            {
+                return false;
+            }
+
+            _paintingContext.PaintingsList.RemoveRange(paintingToRemove);
+            await _paintingContext.SaveChangesAsync();
+
+            return true;
         }
     }
 
