@@ -18,7 +18,7 @@ builder.Services.AddCors(p => p.AddPolicy("corsapp", builder =>
         .AllowAnyHeader();
 }));
 
-builder.Services.AddDbContext<PaintingContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("PostgresConnection")));
+builder.Services.AddDbContext<ApplicationContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("PostgresConnection")));
 
 var app = builder.Build();
 

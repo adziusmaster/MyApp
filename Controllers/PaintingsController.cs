@@ -9,32 +9,32 @@ namespace App.Controllers;
     [Route("api/[controller]")]
     public class PaintingsController : ControllerBase
     {
-        private readonly PaintingContext _paintingContext;
-        public PaintingsController(PaintingContext paintingContext)
+        private readonly ApplicationContext _applicationContext;
+        public PaintingsController(ApplicationContext paintingContext)
         {
-            _paintingContext = paintingContext;
+            _applicationContext = paintingContext;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Painting>>> GetPaintings()
         {
-            if(_paintingContext == null ||  _paintingContext.PaintingsList == null)
+            if(_applicationContext == null ||  _applicationContext.PaintingsList == null)
             {
                 return NotFound();
             }
-            return await _paintingContext.PaintingsList.ToListAsync();
+            return await _applicationContext.PaintingsList.ToListAsync();
         }
 
         [HttpPut]
         public async Task<ActionResult<Painting>> AddPainting([FromBody] Painting painting)
         {
-            if(_paintingContext == null || _paintingContext.PaintingsList == null)
+            if(_applicationContext == null || _applicationContext.PaintingsList == null)
             {
                 return NotFound();
             }
-            _paintingContext.PaintingsList.Add(painting);
+            _applicationContext.PaintingsList.Add(painting);
 
-            await _paintingContext.SaveChangesAsync();
+            await _applicationContext.SaveChangesAsync();
 
             return painting;
         }
@@ -42,20 +42,20 @@ namespace App.Controllers;
         [HttpDelete]
         public async Task<ActionResult<bool>> RemovePainting([FromBody] int Id)
         {
-            if(_paintingContext == null || _paintingContext.PaintingsList == null)
+            if(_applicationContext == null || _applicationContext.PaintingsList == null)
             {
                 return NotFound();
             }
 
-            Painting? paintingToRemove = _paintingContext.PaintingsList.Where(p => p.Id == Id).FirstOrDefault();
+            Painting? paintingToRemove = _applicationContext.PaintingsList.Where(p => p.Id == Id).FirstOrDefault();
 
             if(paintingToRemove == null)
             {
                 return false;
             }
 
-            _paintingContext.PaintingsList.RemoveRange(paintingToRemove);
-            await _paintingContext.SaveChangesAsync();
+            _applicationContext.PaintingsList.RemoveRange(paintingToRemove);
+            await _applicationContext.SaveChangesAsync();
 
             return true;
         }
