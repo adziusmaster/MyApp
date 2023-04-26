@@ -2,6 +2,13 @@ using Microsoft.AspNetCore.Mvc;
 using App.Context;
 using App.Models;
 using App.Utils;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace App.Controllers;
 
@@ -10,9 +17,11 @@ namespace App.Controllers;
     public class UserController : ControllerBase
     {
         private readonly ApplicationContext _applicationContext;
-        public UserController(ApplicationContext applicationContext)
+        private readonly IConfiguration _configuration;
+        public UserController(ApplicationContext applicationContext, IConfiguration configuration)
         {
             _applicationContext = applicationContext;
+            _configuration = configuration;
         }
 
         [HttpPut]
@@ -38,28 +47,6 @@ namespace App.Controllers;
             return true;
         }
 
-        [HttpPost]
-        public async Task<ActionResult<bool>> AuthenticateUser([FromBody] User user)
-        {
-            if(_applicationContext == null || _applicationContext.UserList == null)
-            {
-                return NotFound();
-            }
-
-            User? userInLoginProcess = _applicationContext.UserList.Where(userToBeFound => userToBeFound.Login == user.Login).FirstOrDefault();
-            if(userInLoginProcess != null)
-            {
-                if(PasswordUtils.Authenticate(userInLoginProcess, user.Password))
-                {
-                    return Ok(userInLoginProcess.Role);
-                };
-                return Unauthorized();
-            }
-            
-            await _applicationContext.SaveChangesAsync();
-
-            return Unauthorized();
-        }
 
     }
 

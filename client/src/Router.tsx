@@ -2,6 +2,7 @@ import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 import Home from './Home/Home';
 import Login from './Login/Login';
 import Admin from './Admin/Admin';
+import React from 'react';
 
 interface PrivateRouteProps {
   isAuthenticated: boolean;
