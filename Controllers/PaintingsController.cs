@@ -10,9 +10,9 @@ namespace App.Controllers;
     public class PaintingsController : ControllerBase
     {
         private readonly ApplicationContext _applicationContext;
-        public PaintingsController(ApplicationContext paintingContext)
+        public PaintingsController(ApplicationContext applicationContext)
         {
-            _applicationContext = paintingContext;
+            _applicationContext = applicationContext;
         }
 
         [HttpGet]

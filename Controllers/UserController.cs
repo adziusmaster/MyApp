@@ -10,9 +10,9 @@ namespace App.Controllers;
     public class UserController : ControllerBase
     {
         private readonly ApplicationContext _applicationContext;
-        public UserController(ApplicationContext paintingContext)
+        public UserController(ApplicationContext applicationContext)
         {
-            _applicationContext = paintingContext;
+            _applicationContext = applicationContext;
         }
 
         [HttpPut]
