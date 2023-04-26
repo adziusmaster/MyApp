@@ -49,12 +49,16 @@ namespace App.Controllers;
             User? userInLoginProcess = _applicationContext.UserList.Where(userToBeFound => userToBeFound.Login == user.Login).FirstOrDefault();
             if(userInLoginProcess != null)
             {
-                return PasswordUtils.Authenticate(userInLoginProcess, user.Password);
+                if(PasswordUtils.Authenticate(userInLoginProcess, user.Password))
+                {
+                    return Ok(userInLoginProcess.Role);
+                };
+                return Unauthorized();
             }
             
             await _applicationContext.SaveChangesAsync();
 
-            return false;
+            return Unauthorized();
         }
 
     }

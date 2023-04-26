@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Header } from '../Common/Header/Header';
-import { AppProps, AppState, intialAppState } from './AppState';
+import { AppProps, AppState, UserType, intialAppState } from './AppState';
 import Admin from '../Common/Admin/Admin';
 import { fetchData } from '../Common/Admin/AdminUtils';
 import Login from '../Common/Login/Login';
@@ -11,6 +11,10 @@ class App extends React.Component<AppProps, AppState> {
 
   onAdminLoad = () => {
     this.loadAdmin()
+  }
+
+  onLoginSuccessful = (userType: UserType) => {
+    this.loginSuccessfull(userType)
   }
 
   render(): React.ReactNode { 
@@ -27,7 +31,9 @@ class App extends React.Component<AppProps, AppState> {
           /> : <></>
         }
        {!this.state.isLoggedIn ? 
-        <Login/> : <></>
+        <Login
+          handleLogin={this.onLoginSuccessful} 
+        /> : <></>
       }
       </div>
     )
@@ -42,6 +48,17 @@ class App extends React.Component<AppProps, AppState> {
         }
       })
     )
+  }
+
+  loginSuccessfull(userType: UserType){
+    debugger
+    this.setState((currentState) => {
+      return {
+        ...currentState,
+        isLoggedIn: true,
+        userType: userType
+      }
+    })
   }
   
 }

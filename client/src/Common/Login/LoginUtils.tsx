@@ -1,3 +1,4 @@
+import { UserType } from "../../App/AppState"
 import { User } from "./LoginTypes"
 
 export async function createUser(user: User): Promise<boolean> {
@@ -13,19 +14,18 @@ export async function createUser(user: User): Promise<boolean> {
       body: JSON.stringify(user)
     })
 
-    if (!res.ok) throw Error(res.statusText)
- 
-    let json = await res.json()
-    console.log(json)
-    return true
+    if (!res.ok) {
+      throw new Error('Failed to register');
+    }
+
+    return res.ok
 
   } catch (e) {
-    console.error(e)
     return false
   }
 }
 
-export async function login(user: User): Promise<boolean> {
+export async function login(user: User): Promise<UserType> {
   try {
     const endpoint = `${process.env.REACT_APP_BASE_API_URL}/user`
 
@@ -38,14 +38,22 @@ export async function login(user: User): Promise<boolean> {
       body: JSON.stringify(user)
     })
 
-    if (!res.ok) throw Error(res.statusText)
- 
-    let json = await res.json()
-    console.log(json)
-    return true
+    if (!res.ok) {
+      throw new Error('Failed to login');
+    }
+
+    const role = await res.text();
+    
+    if(role == "user") return "user"
+    if(role == "admin") return "admin"
+    return "notLoggedIn"
 
   } catch (e) {
-    console.error(e)
-    return false
+    return "notLoggedIn"
   }
+}
+
+export const EMPTY_USER: User = {
+  login: "",
+  password: ""
 }
