@@ -2,7 +2,7 @@ import { User } from "./LoginTypes"
 
 export async function createUser(user: User): Promise<boolean> {
   try {
-    const endpoint = 'http://localhost:5000/api/user'
+    const endpoint = `${process.env.REACT_APP_BASE_API_URL}/user`
 
     let headers = new Headers()
     headers.append('Content-Type', 'application/json')
@@ -27,7 +27,7 @@ export async function createUser(user: User): Promise<boolean> {
 
 export async function login(user: User): Promise<boolean> {
   try {
-    const endpoint = 'http://localhost:5000/api/user'
+    const endpoint = `${process.env.REACT_APP_BASE_API_URL}/user`
 
     let headers = new Headers()
     headers.append('Content-Type', 'application/json')

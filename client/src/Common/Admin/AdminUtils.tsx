@@ -2,7 +2,7 @@ import { Painting } from "./AdminTypes"
 
 export async function fetchData(): Promise<Array<Painting>> {
   try {
-    const endpoint = 'http://localhost:5000/api/paintings'
+    const endpoint = `${process.env.REACT_APP_BASE_API_URL}/paintings`
 
     let headers = new Headers()
     headers.append('Content-Type', 'application/json')
@@ -28,7 +28,7 @@ export async function fetchData(): Promise<Array<Painting>> {
 
 export async function addData(painting: Painting) {
   try {
-    const endpoint = 'http://localhost:5000/api/paintings'
+    const endpoint = `${process.env.REACT_APP_BASE_API_URL}/paintings`
 
     let headers = new Headers()
     headers.append('Content-Type', 'application/json')
@@ -51,7 +51,7 @@ export async function addData(painting: Painting) {
 }
 export async function removeData(id: number) {
   try {
-    const endpoint = 'http://localhost:5000/api/paintings'
+    const endpoint = `${process.env.REACT_APP_BASE_API_URL}/paintings`
 
     let headers = new Headers()
     headers.append('Content-Type', 'application/json')
