@@ -18,7 +18,6 @@ namespace App.Controllers;
 
     [Authorize]
     [HttpGet]
-    [Route("api/check-auth")]
     public IActionResult CheckAuth()
     {
       // User is authenticated, return success response
