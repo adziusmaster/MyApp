@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Security.Cryptography;
 using System.Text;
+using App.Models;
 
 namespace App.Utils
 {
@@ -37,6 +38,14 @@ namespace App.Utils
 
         return sha256.ComputeHash(passwordWithSaltBytes);
       }
+    }
+
+    public static bool Authenticate(User user, string password)
+    {
+
+        byte[] passwordHash = ComputePasswordHash(password, user.PasswordSalt);
+
+        return passwordHash.SequenceEqual(user.PasswordHash);
     }
   }
 }

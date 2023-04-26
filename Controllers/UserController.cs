@@ -15,7 +15,7 @@ namespace App.Controllers;
             _applicationContext = paintingContext;
         }
 
-        [HttpPost]
+        [HttpPut]
         public async Task<ActionResult<bool>> AddUser([FromBody] User user)
         {
             if(_applicationContext == null || _applicationContext.UserList == null)
@@ -36,6 +36,25 @@ namespace App.Controllers;
             await _applicationContext.SaveChangesAsync();
 
             return true;
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<bool>> AuthenticateUser([FromBody] User user)
+        {
+            if(_applicationContext == null || _applicationContext.UserList == null)
+            {
+                return NotFound();
+            }
+
+            User? userInLoginProcess = _applicationContext.UserList.Where(userToBeFound => userToBeFound.Login == user.Login).FirstOrDefault();
+            if(userInLoginProcess != null)
+            {
+                return PasswordUtils.Authenticate(userInLoginProcess, user.Password);
+            }
+            
+            await _applicationContext.SaveChangesAsync();
+
+            return false;
         }
 
     }
