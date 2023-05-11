@@ -6,16 +6,19 @@ import React from 'react';
 
 interface PrivateRouteProps {
   isAuthenticated: boolean;
-  path: string;
-  element: React.ReactNode;
+  redirectPath?: string;
+  children: React.ReactNode;
 }
 
-const PrivateRoute: React.FC<PrivateRouteProps> = ({ isAuthenticated, path, element }) => {
-  return isAuthenticated ? (
-    <Route path={path} element={element} />
-  ) : (
-    <Navigate to="/login" />
-  );
+const PrivateRoute: React.FC<PrivateRouteProps> = ({
+  isAuthenticated,
+  redirectPath = '/login',
+  children,
+}) => {
+  if (!isAuthenticated) {
+    return <Navigate to={redirectPath} replace />;
+  }
+  return <>{children}</>;
 };
 
 interface RouterProps {
@@ -27,15 +30,19 @@ export const Router: React.FC<RouterProps> = ({ isAuthenticated, liftLoginState 
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login liftLoginState={liftLoginState}/>} />
+        <Route 
+          path="/" 
+          element={<Home />} />
+        <Route 
+          path="/login" 
+          element={<Login liftLoginState={liftLoginState} />} />
         <Route
           path="/admin"
-          element={<PrivateRoute
-            isAuthenticated={isAuthenticated}
-            path="/admin"
-            element={<Admin />}
-          />}
+          element={
+            <PrivateRoute isAuthenticated={isAuthenticated} redirectPath={"/login"} >
+              <Admin />
+            </PrivateRoute>
+          }
         />
       </Routes>
     </BrowserRouter>

@@ -18,6 +18,7 @@ export type LoginState = {
   passwordVisible: boolean
 }
 class Login extends React.Component<LoginProps, LoginState> {
+
   state: LoginState = {
     mode: "newUser",
     user: EMPTY_USER,
@@ -78,6 +79,13 @@ class Login extends React.Component<LoginProps, LoginState> {
     }
   }
 
+  handleLogout(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
+    e.preventDefault()
+    sessionStorage.removeItem('token')
+    document.location.reload()
+  }
+  
+
   render(): React.ReactNode {
     return (
       <div>
@@ -119,6 +127,25 @@ class Login extends React.Component<LoginProps, LoginState> {
             <button onClick={() => this.setState({ ...this.state, mode: "existingUser", user: EMPTY_USER })}>Login here</button>
           </div>
         )}
+        {this.state.mode == "loginFailed" && (
+          <div>
+            <p>Wrong login! Try again</p>
+            <form onSubmit={(e) => { e.preventDefault(); this.handleLogin(this.state.user) }}>
+              <label>
+                Login:
+                <input type="text" value={this.state.user.login} name="login" onChange={(e) => this.handleLoginChange(e.currentTarget.value)} />
+              </label>
+              <label>
+                Password:
+                <input type={this.state.passwordVisible ? "text" : "password"} value={this.state.user.password} name="password" onChange={(e) => this.handlePasswordChange(e.currentTarget.value)} />
+              </label>
+              <button onClick={(e) => this.handlePasswordVisibilityToggle(e)}>{this.state.passwordVisible? "Hide password" : "Show password"}</button>
+              <input type="submit" value="Submit" />
+            </form>
+            <p>Not a user yet?</p>
+            <button onClick={() =>  this.setState({ ...this.state, mode: "newUser", user: EMPTY_USER})}>Register here</button>
+        </div>
+        )}
     </div>
     )
   }
@@ -135,12 +162,9 @@ export async function validateUser() {
   try {
     const endpoint = `${process.env.REACT_APP_BASE_API_URL}/authorization`
 
-    console.log("validate -------------------")
-    console.log(localStorage.getItem('token'))
-
     let headers = new Headers()
     headers.append('Content-Type', 'application/json')
-    headers.append('Authorization', `${localStorage.getItem('token')}`)
+    headers.append('Authorization', `${sessionStorage.getItem('token')}`)
 
     let res = await fetch(endpoint, {
       method: 'get', 
@@ -155,8 +179,6 @@ export async function validateUser() {
   } catch (e) {
     return false
   }
-
-
 }
 
 async function loginUser(user: User) {
@@ -175,20 +197,10 @@ async function loginUser(user: User) {
     if (!res.ok) {
       throw new Error('Failed to login');
     }
-    console.log("before removing-------------------")
-    console.log(localStorage.getItem('token'))
-
-    localStorage.removeItem('token')
-
-    console.log("after removing -------------------")
-    console.log(localStorage.getItem('token'))
 
     await res.json().then(
-      token => localStorage.setItem('token', token.token)
+      token => sessionStorage.setItem('token', token.token)
     )
-
-    console.log("after fetch -------------------")
-    console.log(localStorage.getItem('token'))
 
     return res.ok
 
