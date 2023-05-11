@@ -1,5 +1,4 @@
 import React from "react";
-import axios from 'axios';
 
 
 export const EMPTY_USER: User = {
@@ -7,18 +6,20 @@ export const EMPTY_USER: User = {
   password: ""
 }
 
-export type LoginProps = {
+export type AppMode = "newUser" | "existingUser" | "justRegistered" | "loggedIn" | "loginFailed"
 
+export type LoginProps = {
+  liftLoginState: () => void
 }
 
 export type LoginState = {
-  mode: "newUser" | "existingUser" | "justRegistered" | "loggedIn" | "loginFailed",
+  mode: AppMode,
   user: User
   passwordVisible: boolean
 }
 class Login extends React.Component<LoginProps, LoginState> {
   state: LoginState = {
-    mode: "existingUser",
+    mode: "newUser",
     user: EMPTY_USER,
     passwordVisible: false
   }
@@ -59,13 +60,31 @@ class Login extends React.Component<LoginProps, LoginState> {
     })
   }
 
+  async handleLogin(user: User) {
+    let succeeded = await loginUser(user)
+    if(succeeded) {
+      this.setState({
+        ...this.state,
+        mode: "loggedIn",
+        user: user
+      })
+      this.props.liftLoginState()
+    } else {
+      this.setState({
+        ...this.state,
+        mode: "loginFailed"
+      })
+      this.props.liftLoginState()
+    }
+  }
+
   render(): React.ReactNode {
     return (
       <div>
         {this.state.mode == "existingUser" && (
           <div>
             <p>Login!</p>
-            <form onSubmit={(e) => { e.preventDefault(); handleLogin(this.state.user) }}>
+            <form onSubmit={(e) => { e.preventDefault(); this.handleLogin(this.state.user) }}>
               <label>
                 Login:
                 <input type="text" value={this.state.user.login} name="login" onChange={(e) => this.handleLoginChange(e.currentTarget.value)} />
@@ -112,29 +131,70 @@ export type User = {
   password: string
 }
 
-export function validateUser() {
-  return axios.get(`${process.env.REACT_APP_BASE_API_URL}/authorization`)
-    .then(() => {
-      debugger
-      // User is authenticated, return true
-      return true;
+export async function validateUser() {
+  try {
+    const endpoint = `${process.env.REACT_APP_BASE_API_URL}/authorization`
+
+    console.log("validate -------------------")
+    console.log(localStorage.getItem('token'))
+
+    let headers = new Headers()
+    headers.append('Content-Type', 'application/json')
+    headers.append('Authorization', `${localStorage.getItem('token')}`)
+
+    let res = await fetch(endpoint, {
+      method: 'get', 
+      headers: headers
     })
-    .catch(() => {
-      // User is not authenticated, return false
-      return false;
-    });
+
+    if (!res.ok) {
+      throw new Error('Failed to validate');
+    }
+    return res.ok
+
+  } catch (e) {
+    return false
+  }
+
+
 }
 
-function handleLogin(user: User) {
-  axios.post(`${process.env.REACT_APP_BASE_API_URL}/authorization`, { user })
-    .then(response => {
-      const { token } = response.data;
-      localStorage.setItem('token', token);
-      // Redirect to authenticated page
+async function loginUser(user: User) {
+  try {
+    const endpoint = `${process.env.REACT_APP_BASE_API_URL}/authorization?userLogin=${user.login}&userPassword=${user.password}`
+
+    let headers = new Headers()
+    headers.append('Content-Type', 'application/json')
+
+    let res = await fetch(endpoint, {
+      method: 'post', 
+      headers: headers,
+      body: JSON.stringify(user)
     })
-    .catch(error => {
-      // Handle login error
-    });
+
+    if (!res.ok) {
+      throw new Error('Failed to login');
+    }
+    console.log("before removing-------------------")
+    console.log(localStorage.getItem('token'))
+
+    localStorage.removeItem('token')
+
+    console.log("after removing -------------------")
+    console.log(localStorage.getItem('token'))
+
+    await res.json().then(
+      token => localStorage.setItem('token', token.token)
+    )
+
+    console.log("after fetch -------------------")
+    console.log(localStorage.getItem('token'))
+
+    return res.ok
+
+  } catch (e) {
+    return false
+  }
 }
 
 async function createUser(user: User): Promise<boolean> {

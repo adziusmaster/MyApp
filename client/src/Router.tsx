@@ -1,6 +1,6 @@
 import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 import Home from './Home/Home';
-import Login from './Login/Login';
+import Login, { AppMode } from './Login/Login';
 import Admin from './Admin/Admin';
 import React from 'react';
 
@@ -20,14 +20,15 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ isAuthenticated, path, elem
 
 interface RouterProps {
   isAuthenticated: boolean;
+  liftLoginState: () => void
 }
 
-export const Router: React.FC<RouterProps> = ({ isAuthenticated }) => {
+export const Router: React.FC<RouterProps> = ({ isAuthenticated, liftLoginState }) => {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
+        <Route path="/login" element={<Login liftLoginState={liftLoginState}/>} />
         <Route
           path="/admin"
           element={<PrivateRoute

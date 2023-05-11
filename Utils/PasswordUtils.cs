@@ -40,7 +40,7 @@ namespace App.Utils
       }
     }
 
-    public static bool Authenticate(User user, string password)
+    public static bool Authorize(User user, string password)
     {
 
         byte[] passwordHash = ComputePasswordHash(password, user.PasswordSalt);
