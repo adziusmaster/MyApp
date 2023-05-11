@@ -80,3 +80,4 @@
 /home/andrzej/projects/MyApp/App/obj/Debug/net7.0/App.pdb
 /home/andrzej/projects/MyApp/App/obj/Debug/net7.0/App.genruntimeconfig.cache
 /home/andrzej/projects/MyApp/App/obj/Debug/net7.0/ref/App.dll
+/home/andrzej/projects/MyApp/App/bin/Debug/net7.0/Microsoft.AspNetCore.Authentication.JwtBearer.dll

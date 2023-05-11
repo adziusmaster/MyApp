@@ -29,28 +29,30 @@ public class AuthorizationController : ControllerBase
   {
     return Ok();
   }
-  
+
   [AllowAnonymous]
   [HttpPost]
-  public async Task<IActionResult> AuthenticateUser([FromBody] User user)
+  public async Task<IActionResult> Authenticate([FromQuery] string userLogin, string userPassword)
   {
     if (_applicationContext == null || _applicationContext.UserList == null)
     {
       return NotFound();
     }
 
-    User? userInLoginProcess = _applicationContext.UserList.FirstOrDefault(u => u.Login == user.Login);
+    // User? userInLoginProcess = _applicationContext.UserList.FirstOrDefault(u => u.Login == userLogin);
 
-    if (userInLoginProcess == null || !PasswordUtils.Authenticate(userInLoginProcess, user.Password))
-    {
-      return Unauthorized();
-    }
+    // if (userInLoginProcess == null || !PasswordUtils.Authenticate(userInLoginProcess, userPassword))
+    // {
+    //   return Unauthorized();
+    // }
 
     var claims = new[]
     {
-                new Claim(ClaimTypes.NameIdentifier, userInLoginProcess.Id.ToString()),
-                new Claim(ClaimTypes.Name, userInLoginProcess.Login)
-            };
+      // new Claim(ClaimTypes.NameIdentifier, userInLoginProcess.Id.ToString()),
+      // new Claim(ClaimTypes.Name, userInLoginProcess.Login)
+      new Claim(ClaimTypes.NameIdentifier,"id"),
+      new Claim(ClaimTypes.Name, "login")
+    };
     var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["AndrzejSecretKey"]));
     var token = new JwtSecurityToken(
         claims: claims,
