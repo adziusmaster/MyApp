@@ -3,35 +3,7 @@ import Home from './Home/Home';
 import Login, { AppMode, validateUser } from './Login/Login';
 import Admin from './Admin/Admin';
 import React, { useEffect, useState } from 'react';
-
-interface PrivateRouteProps {
-  children: React.ReactNode;
-}
-
-const REDIRECT_TO_LOGIN = <Navigate to={"/login"} replace />
-
-const PrivateRoute: React.FC<PrivateRouteProps> = ({
-  children,
-}) => {
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean | undefined>(undefined);
-
-  useEffect(() => {
-    validateUser()
-      .then(result => setIsLoggedIn(result))
-      .catch(error => {
-        console.error(error);
-        setIsLoggedIn(false);
-      });
-  }, []);
-
-  if (isLoggedIn === undefined) {
-    return <div>Loading...</div>;
-  }
-  if (isLoggedIn) {
-    return <>{children}</>;
-  }
-  return REDIRECT_TO_LOGIN;
-};
+import { PrivateRoute } from './PrivateRoutes';
 
 interface RouterProps {
   liftLoginState: () => void
