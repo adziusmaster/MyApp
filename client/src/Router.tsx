@@ -1,32 +1,43 @@
 import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 import Home from './Home/Home';
-import Login, { AppMode } from './Login/Login';
+import Login, { AppMode, validateUser } from './Login/Login';
 import Admin from './Admin/Admin';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 interface PrivateRouteProps {
-  isAuthenticated: boolean;
-  redirectPath?: string;
   children: React.ReactNode;
 }
 
+const REDIRECT_TO_LOGIN = <Navigate to={"/login"} replace />
+
 const PrivateRoute: React.FC<PrivateRouteProps> = ({
-  isAuthenticated,
-  redirectPath = '/login',
   children,
 }) => {
-  if (!isAuthenticated) {
-    return <Navigate to={redirectPath} replace />;
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean | undefined>(undefined);
+
+  useEffect(() => {
+    validateUser()
+      .then(result => setIsLoggedIn(result))
+      .catch(error => {
+        console.error(error);
+        setIsLoggedIn(false);
+      });
+  }, []);
+
+  if (isLoggedIn === undefined) {
+    return <div>Loading...</div>;
   }
-  return <>{children}</>;
+  if (isLoggedIn) {
+    return <>{children}</>;
+  }
+  return REDIRECT_TO_LOGIN;
 };
 
 interface RouterProps {
-  isAuthenticated: boolean;
   liftLoginState: () => void
 }
 
-export const Router: React.FC<RouterProps> = ({ isAuthenticated, liftLoginState }) => {
+export const Router: React.FC<RouterProps> = ({ liftLoginState }) => {
   return (
     <BrowserRouter>
       <Routes>
@@ -39,7 +50,7 @@ export const Router: React.FC<RouterProps> = ({ isAuthenticated, liftLoginState 
         <Route
           path="/admin"
           element={
-            <PrivateRoute isAuthenticated={isAuthenticated} redirectPath={"/login"} >
+            <PrivateRoute>
               <Admin />
             </PrivateRoute>
           }

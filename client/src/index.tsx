@@ -34,14 +34,11 @@ const App = () => {
   }
   
   if (isAuthenticated === undefined) {
-    // Authentication status is being checked
     return <div>Loading...</div>;
   } else {
-    // Authentication status check is complete, render the Router component
     return (
       <React.StrictMode>
         <Router 
-          isAuthenticated={isAuthenticated}
           liftLoginState={liftLoginState}
         />
       </React.StrictMode>
